@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Fábrica de Separar</title>
+  <meta name="description" content="Separe as cores no puzzle, monte uma fábrica que trabalha sozinha e ative boosts para render ainda mais.">
+  <meta name="theme-color" content="#1b1f2a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%231b1f2a'/%3E%3Cg fill='none' stroke='%23ffd60a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' transform='translate(3 3) scale(.75)'%3E%3Cpath d='M9 3h6'/%3E%3Cpath d='M10 3v6.5L5.6 18a2.6 2.6 0 0 0 2.3 3.8h8.2a2.6 2.6 0 0 0 2.3-3.8L14 9.5V3'/%3E%3Cpath d='M7.5 15h9'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <noscript>Ative o JavaScript para jogar a Fábrica de Separar.</noscript>
+  <header>
+    <div class="stat left"><span>Nível <b id="level">1</b></span><small class="gemline"><span data-icon="gem"></span><b id="gems">0</b></small></div>
+    <h1>Fábrica de Separar</h1>
+    <div class="stat right"><span class="coinline"><span data-icon="coin"></span><b id="coins">0</b></span><small id="rate"></small></div>
+  </header>
+
+  <nav>
+    <button id="tab-puzzle" class="tab active" data-tab="puzzle" type="button"><span data-icon="tube"></span><em>Puzzle</em></button>
+    <button id="tab-factory" class="tab" data-tab="factory" type="button"><span data-icon="factory"></span><em>Fábrica</em></button>
+    <button id="tab-ach" class="tab" data-tab="ach" type="button"><span data-icon="medal"></span><em>Metas</em></button>
+    <button id="tab-premium" class="tab" data-tab="premium" type="button"><span data-icon="gem"></span><em>Premium</em></button>
+    <button id="btn-symbols" class="icon-btn" type="button" title="Mostrar símbolos nas cores" aria-label="Mostrar símbolos nas cores"><span data-icon="shapes"></span></button>
+    <button id="btn-lang" class="icon-btn" type="button" title="Idioma" aria-label="Idioma">PT</button>
+    <button id="btn-sound" class="icon-btn" type="button" title="Som" aria-label="Ligar ou desligar o som"><span data-icon="volume"></span></button>
+  </nav>
+
+  <div id="boosts" aria-label="Boosts"></div>
+
+  <section id="view-puzzle" class="view">
+    <div id="hint-puzzle" class="hint" hidden>
+      <span>Toque num tubo para pegar as cores do topo. Os tubos que brilham em verde aceitam essa cor: toque num deles para despejar. Junte cada cor num tubo!</span>
+      <button type="button" class="hint-ok">Entendi</button>
+    </div>
+    <main id="board" aria-label="Tubos de cores"></main>
+    <footer>
+      <button id="undo" type="button"><span data-icon="undo"></span> Desfazer</button>
+      <button id="restart" type="button"><span data-icon="restart"></span> Reiniciar</button>
+    </footer>
+  </section>
+
+  <section id="view-factory" class="view" hidden>
+    <div class="scene"><canvas id="belt" aria-label="Sua fábrica separando peças"></canvas></div>
+    <div id="factory-summary" class="pills"></div>
+    <div id="hint-factory" class="hint" hidden>
+      <span>Aqui a fábrica trabalha por você! Compre uma Esteira com as moedas do puzzle: ela produz moedas sozinha, até com o jogo fechado. Tudo que você instala aparece na cena e em "Sua fábrica".</span>
+      <button type="button" class="hint-ok">Entendi</button>
+    </div>
+
+    <section class="panel">
+      <h3><span data-icon="factory"></span> Sua fábrica <small id="inv-count"></small></h3>
+      <div id="inventory" class="inv"></div>
+    </section>
+
+    <section class="shop">
+      <h3>Loja</h3>
+      <div class="shop-tabs">
+        <button id="shop-machines" class="stab active" type="button">Máquinas</button>
+        <button id="shop-upgrades" class="stab" type="button">Melhorias <b id="up-badge" hidden></b></button>
+      </div>
+      <div id="pane-machines">
+        <div id="buy-mode">
+          <span>Comprar:</span>
+          <button type="button" data-mode="1" class="active">×1</button>
+          <button type="button" data-mode="10">×10</button>
+          <button type="button" data-mode="max">Máx</button>
+        </div>
+        <div id="machines"></div>
+      </div>
+      <div id="pane-upgrades" hidden>
+        <div id="upgrades"></div>
+      </div>
+    </section>
+  </section>
+
+  <section id="view-ach" class="view" hidden>
+    <div class="goal-tabs">
+      <button id="goal-missions" class="stab active" type="button">Missões <b id="mis-badge" hidden></b></button>
+      <button id="goal-achs" class="stab" type="button">Conquistas <b id="ach-badge" hidden></b></button>
+    </div>
+    <div id="pane-missions"></div>
+    <div id="pane-achs" hidden>
+      <div id="ach-summary" class="pills"></div>
+      <section class="shop"><h3><span data-icon="medal"></span> Conquistas</h3><div id="ach-list"></div></section>
+    </div>
+  </section>
+
+  <section id="view-premium" class="view" hidden>
+    <section class="panel">
+      <h3><span data-icon="gem"></span> Suas gemas <small><b id="gems-big">0</b></small></h3>
+      <p id="pay-note" class="note"></p>
+      <div id="packs" class="packs"></div>
+    </section>
+    <section class="shop"><h3>Gastar gemas</h3><div id="gem-items"></div></section>
+  </section>
+
+  <div id="win" class="overlay" hidden>
+    <div class="card">
+      <h2 id="win-title">Nível completo!</h2>
+      <p id="win-moves"></p>
+      <p id="win-text"></p>
+      <button id="next" type="button">Próximo nível</button>
+      <button id="to-factory" class="secondary" type="button"><span data-icon="factory"></span> Ir à fábrica</button>
+    </div>
+  </div>
+
+  <div id="offline" class="overlay" hidden>
+    <div class="card">
+      <h2>Bem-vindo de volta!</h2>
+      <p id="offline-text"></p>
+      <p id="offline-boosts"></p>
+      <button id="offline-double" class="ad-btn" type="button" hidden><span data-icon="play"></span> Dobrar com anúncio</button>
+      <button id="offline-ok" type="button">Coletar</button>
+    </div>
+  </div>
+
+  <div id="hand" aria-hidden="true" hidden><span data-icon="hand"></span></div>
+  <div id="toast" role="status" hidden></div>
+  <div id="confetti" aria-hidden="true"></div>
+
+  <script>window.GAME_GEM_PURCHASE = false;</script>
+  <script>window.GAME_PLATFORM = 'web';</script>
+  <script src="js/platform.js"></script>
+  <script src="js/loader.js"></script>
+</body>
+</html>
